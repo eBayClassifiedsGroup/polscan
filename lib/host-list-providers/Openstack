@@ -1,0 +1,26 @@
+#!/usr/bin/env python
+import os
+import json
+from novaclient import client as nova_client
+
+try:
+    import requests
+except:
+    print "Please install python-requests"
+    os.exit(1)
+
+from getpass import getpass
+
+os_auth_url = os.environ['OS_AUTH_URL']
+os_tenant_name = os.environ['OS_TENANT_NAME']
+os_username = os.environ['OS_USERNAME']
+domain = os.environ['DOMAIN']
+os_password = getpass('Password, please: ')
+
+nova = nova_client.Client('2', os_username, os_password, os_tenant_name, os_auth_url)
+servers = nova.servers.list(search_opts={'all_tenants':1})
+for server in servers:
+    if domain:
+        print ("{}.{}".format(server.name, domain))
+    else:
+        print server.name
